@@ -27,9 +27,9 @@ const char recvFileName[] = "recvfile";
 void init(int& shmid, int& msqid, void*& sharedMemPtr)
 {
 
-	/* TODO: 1. Create a file called keyfile.txt containing string "Hello world" (you may do
+	/* 1. Create a file called keyfile.txt containing string "Hello world" (you may do
  		    so manually or from the code).
-	         2. Use ftok("keyfile.txt", 'a') in order to generate the key.
+	   2. Use ftok("keyfile.txt", 'a') in order to generate the key.
 		 3. Use the key in the TODO's below. Use the same key for the queue
 		    and the shared memory segment. This also serves to illustrate the difference
 		    between the key and the id used in message queues and shared memory. The id
@@ -38,25 +38,25 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 		    may have the same key.
 	 */
 	 key_t key = ftok("keyfile.txt", 'a');
-	/* TODO: Allocate a piece of shared memory. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE. */
+	// Allocate a piece of shared memory. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE. */
 	if ( (shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666 | IPC_CREAT)) < 0 ){
-		perror("ERROR - shmget");
+		perror("ERROR: shmget");
 		exit(1);
 	}
 
-	/* TODO: Attach to the shared memory */
+	// Attach to the shared memory */
 	if ((sharedMemPtr = shmat(shmid, NULL, 0)) == (char*)-1) {
-			perror("ERROR - shmat");
+			perror("ERROR: shmat");
 			exit(1);
 	}
 
-	/* TODO: Create a message queue */
+	// Create a message queue */
 	if ((msqid = msgget(key, 0666 | IPC_CREAT)) < 0) {
-			perror("ERROR - msgget");
+			perror("ERROR: msgget");
 			exit(1);
 	}
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
-}
+} // end of init
 
 
 /**
@@ -114,16 +114,16 @@ void mainLoop()
  			 */
  			msgFile.mtype = RECV_DONE_TYPE;
 			if ( msgsnd(msqid, &msgFile, 0 , 0) == -1) {
-				perror("ERROR - msgsnd");
+				perror("ERROR: msgsnd");
 				exit(1);
 			}
 			// Receive next message
 			if ( msgrcv(msqid, &msgFile, sizeof(struct message) - sizeof(long), SENDER_DATA_TYPE , 0) == -1) {
-				perror("ERROR - msgrcv");
+				perror("ERROR: msgrcv");
 				exit(1);
 			}
 
-			// Set message size from recived message, LCV
+			// Set message size from received message, LCV
 			msgSize = msgFile.size;
 
 		}
@@ -144,16 +144,15 @@ void mainLoop()
  * @param shmid - the id of the shared memory segment
  * @param msqid - the id of the message queue
  */
-
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 {
-	/* TODO: Detach from shared memory */
+	// Detach from shared memory
 	shmdt(sharedMemPtr);
 
-	/* TODO: Deallocate the shared memory chunk */
+	// Deallocate the shared memory chunk
 	shmctl(shmid, IPC_RMID, NULL);
 
-	/* TODO: Deallocate the message queue */
+	// Deallocate the message queue
 	msgctl(msqid, IPC_RMID, NULL);
 } // end of cleanUp
 
@@ -161,7 +160,6 @@ void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
  * Handles the exit signal
  * @param signal - the signal type
  */
-
 void ctrlCSignal(int signal)
 {
 	/* Free system V resources */
@@ -170,8 +168,7 @@ void ctrlCSignal(int signal)
 
 int main(int argc, char** argv)
 {
-
-	/* TODO: Install a singnal handler (see signaldemo.cpp sample file).
+	/* Install a singnal handler (see signaldemo.cpp sample file).
  	 * In a case user presses Ctrl-c your program should delete message
  	 * queues and shared memory before exiting. You may add the cleaning functionality
  	 * in ctrlCSignal().
@@ -184,7 +181,7 @@ int main(int argc, char** argv)
 	/* Go to the main loop */
 	mainLoop();
 
-	/** TODO: Detach from shared memory segment, and deallocate shared memory and message queue (i.e. call cleanup) **/
+	// Detach from shared memory segment, and deallocate shared memory and message queue (i.e. call cleanup) **/
 	cleanUp(shmid, msqid, sharedMemPtr);
 
 	return 0;
