@@ -113,16 +113,15 @@ void mainLoop()
  			 * does not matter in this case).
  			 */
  			msgFile.mtype = RECV_DONE_TYPE;
-			if ( msgsnd(msqid, &msgFile, 0 , 0) == -1) {
+			if ( msgsnd(msqid, &msgFile, 0 , 0) < 0) {
 				perror("ERROR: msgsnd");
 				exit(1);
 			}
 			// Receive next message
-			if ( msgrcv(msqid, &msgFile, sizeof(message), SENDER_DATA_TYPE , 0) == -1) {
+			if ( msgrcv(msqid, &msgFile, sizeof(message), SENDER_DATA_TYPE , 0) < 0) {
 				perror("ERROR: msgrcv");
 				exit(1);
 			}
-
 			// Set message size from received message, LCV
 			msgSize = msgFile.size;
 
