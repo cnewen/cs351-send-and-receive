@@ -22,26 +22,26 @@ void* sharedMemPtr;
 
 void init(int& shmid, int& msqid, void*& sharedMemPtr)
 {
-	/* TODO:
+	/*
     1. Create a file called keyfile.txt containing string "Hello world" (you may do
- 		    so manually or from the code).
+ 		   so manually or from the code).
 	  2. Use ftok("keyfile.txt", 'a') in order to generate the key.
 		3. Use the key in the TODO's below. Use the same key for the queue
-		    and the shared memory segment. This also serves to illustrate the difference
-		    between the key and the id used in message queues and shared memory. The id
-		    for any System V objest (i.e. message queues, shared memory, and sempahores)
-		    is unique system-wide among all SYstem V objects. Two objects, on the other hand,
-		    may have the same key.
+		   and the shared memory segment. This also serves to illustrate the difference
+		   between the key and the id used in message queues and shared memory. The id
+	     for any System V objest (i.e. message queues, shared memory, and sempahores)
+	     is unique system-wide among all SYstem V objects. Two objects, on the other hand,
+	     may have the same key.
 	 */
 	key_t key = ftok("keyfile.txt", 'a');
 
-	/* TODO: Get the id of the shared memory segment. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE */
+	// Get the id of the shared memory segment. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE */
 	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666 | IPC_CREAT);
 
-	/* TODO: Attach to the shared memory */
+	// Attach to the shared memory */
 	sharedMemPtr = shmat(shmid, (void *) 0, 0);
 
-	/* TODO: Attach to the message queue */
+	// Attach to the message queue */
 	msqid = msgget(key, 0666 | IPC_CREAT);
 
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
@@ -55,7 +55,7 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
  */
 void cleanUp(const int& shmid, const int& msqid, void* sharedMemPtr)
 {
-	/* TODO: Detach from shared memory */
+	// Detach from shared memory */
 	shmdt(sharedMemPtr);
 } // end of cleanUp
 
@@ -95,32 +95,32 @@ void send(const char* fileName)
 		}
 
 
-		/* TODO: Send a message to the receiver telling him that the data is ready
+		/* Send a message to the receiver telling him that the data is ready
  		 * (message of type SENDER_DATA_TYPE)
  		 */
 		 if (msgsnd(msqid, &sndMsg , sizeof(struct message) - sizeof(long), 0) == -1){
- 			perror("ERROR - msgsnd");
+ 			perror("ERROR: msgsnd");
  		}
 
-		/* TODO: Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us
+		/* Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us
  		 * that he finished saving the memory chunk.
  		 */
 		 if ( msgrcv(msqid, &rcvMsg, sizeof(struct message) - sizeof(long), RECV_DONE_TYPE, 0) == -1 ) {
-			 perror("ERROR - msgrcv");
+			 perror("ERROR: msgrcv");
 			 exit(1);
 		 }
 
 	} // end of while loop
 
 
-	/** TODO: once we are out of the above loop, we have finished sending the file.
+	/** Once we are out of the above loop, we have finished sending the file.
  	  * Lets tell the receiver that we have nothing more to send. We will do this by
  	  * sending a message of type SENDER_DATA_TYPE with size field set to 0.
 	  */
 		sndMsg.size = 0;
 
 		if (msgsnd(msqid, &sndMsg , sizeof(struct message) - sizeof(long) , 0) == -1) {
-			perror("ERROR - msgsnd");
+			perror("ERROR: msgsnd");
 		}
 
 
@@ -128,7 +128,6 @@ void send(const char* fileName)
 	fclose(fp);
 
 } // end of send()
-
 
 int main(int argc, char** argv)
 {
