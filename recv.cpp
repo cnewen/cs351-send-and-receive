@@ -66,7 +66,7 @@ void mainLoop()
 {
 	/* The size of the mesage */
 	int msgSize = 0;
-	const int messageSize = sizeof(struct message) - sizeof(long);
+
 	message msgFile;
 
 	/* Open the file for writing */
@@ -89,7 +89,7 @@ void mainLoop()
      * NOTE: the received file will always be saved into the file called
      * "recvfile"
   */
-	msgrcv(msqid, &msgFile, messageSize, SENDER_DATA_TYPE , 0);
+	msgrcv(msqid, &msgFile, sizeof(message), SENDER_DATA_TYPE , 0);
 
 	// Set message size from received message
 	msgSize = msgFile.size;
@@ -118,7 +118,7 @@ void mainLoop()
 				exit(1);
 			}
 			// Receive next message
-			if ( msgrcv(msqid, &msgFile, sizeof(struct message) - sizeof(long), SENDER_DATA_TYPE , 0) == -1) {
+			if ( msgrcv(msqid, &msgFile, sizeof(message), SENDER_DATA_TYPE , 0) == -1) {
 				perror("ERROR: msgrcv");
 				exit(1);
 			}
