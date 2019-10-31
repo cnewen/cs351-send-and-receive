@@ -1,8 +1,8 @@
-all: receiver sender
+all: recv sender
 
 # Receiver
-receiver: recv.cpp
-	g++ recv.cpp -o receiver
+recv: recv.cpp
+	g++ recv.cpp -o recv
 
 # Sender
 sender: sender.cpp
