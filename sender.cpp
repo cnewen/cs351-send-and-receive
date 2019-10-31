@@ -34,15 +34,26 @@ void init(int& shmid, int& msqid, void*& sharedMemPtr)
 	     may have the same key.
 	 */
 	key_t key = ftok("keyfile.txt", 'a');
-
 	// Get the id of the shared memory segment. The size of the segment must be SHARED_MEMORY_CHUNK_SIZE */
-	shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666 | IPC_CREAT);
+	if ( (shmid = shmget(key, SHARED_MEMORY_CHUNK_SIZE, 0666 | IPC_CREAT)) < 0 ) {
+		perror("(shmget) Error getting the shared memory segment id");
+		exit(1);
+	}
 
-	// Attach to the shared memory */
+	// Attach to the shared memory
 	sharedMemPtr = shmat(shmid, (void *) 0, 0);
 
-	// Attach to the message queue */
-	msqid = msgget(key, 0666 | IPC_CREAT);
+	if (sharedMemPtr == (char *)(-1)) {
+		perror("ERROR: shmat");
+		exit(1);
+	}
+
+	// Attach to the message queue
+	if ( (msqid = msgget(key, 0666 | IPC_CREAT)) < 0 ) {
+		perror("(msgget) Error getting message from queue");
+		exit(1);
+	}
+
 
 	/* Store the IDs and the pointer to the shared memory region in the corresponding parameters */
 } // end of init
