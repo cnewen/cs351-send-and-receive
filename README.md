@@ -1,6 +1,6 @@
 # cs351-send-and-receive
 
-# To Compile the Program.
+#### To Compile the Program.
 $ make
 
 Using two terminals.
