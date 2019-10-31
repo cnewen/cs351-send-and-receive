@@ -98,14 +98,14 @@ void send(const char* fileName)
 		/* Send a message to the receiver telling him that the data is ready
  		 * (message of type SENDER_DATA_TYPE)
  		 */
-		 if (msgsnd(msqid, &sndMsg , sizeof(message), 0) == -1){
+		 if (msgsnd(msqid, &sndMsg , sizeof(message), 0) < 0 ){
  			perror("ERROR: msgsnd");
  		}
 
 		/* Wait until the receiver sends us a message of type RECV_DONE_TYPE telling us
  		 * that he finished saving the memory chunk.
  		 */
-		 if ( msgrcv(msqid, &rcvMsg, sizeof(message), RECV_DONE_TYPE, 0) == -1 ) {
+		 if ( msgrcv(msqid, &rcvMsg, sizeof(message), RECV_DONE_TYPE, 0) < 0 ) {
 			 perror("ERROR: msgrcv");
 			 exit(1);
 		 }
@@ -119,7 +119,7 @@ void send(const char* fileName)
 	  */
 		sndMsg.size = 0;
 
-		if (msgsnd(msqid, &sndMsg , sizeof(message), 0) == -1) {
+		if (msgsnd(msqid, &sndMsg , sizeof(message), 0) < 0 ) {
 			perror("ERROR: msgsnd");
 		}
 
