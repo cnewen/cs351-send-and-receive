@@ -1,4 +1,4 @@
-# cs351-send-and-receive
+# Send and Receive message between two terminals
 
 #### To Compile the Program.
 $ make
